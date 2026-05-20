@@ -49,7 +49,7 @@ def update_user(user_id: int, user : UserCreate, db: Session = Depends(get_db)):
         return new_user
     return {"message": "User not found"}
 
-@app.delete("/users/{user_id}", response_model=UserResponse)
+@app.delete("/users/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     new_user = db.query(User).filter(User.id == user_id).first()
     if new_user:

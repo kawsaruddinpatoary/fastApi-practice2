@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+sqlalchemy
+pymysql
+
+
+
+
+
+# File Structure
+# .
+# ├── main.py
+# ├── schemas.py
+# ├── database
+# │   ├── database.py
+# │   ├── model.py
+# └── requirements.txt
