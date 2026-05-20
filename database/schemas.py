@@ -9,3 +9,14 @@ class UserResponse(UserCreate):
 
     class Config:
         orm_mode = True
+
+class PostCreate(BaseModel):
+    title: str
+    content: str
+    user_id: int
+
+class PostResponse(PostCreate):
+    id: int
+
+    class Config:
+        orm_mode = True
