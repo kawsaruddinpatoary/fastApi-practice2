@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from database.database import get_db, Base, engine
 from database.model import Post, User 
 from database.schemas import PostCreate, PostResponse
@@ -27,7 +27,7 @@ def get_post(post_id: int, db: Session = Depends(get_db)):
     new_post = db.query(Post).filter(Post.id == post_id).first()
     if new_post:
         return new_post
-    return {"message": "Post not found"}
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
 @router.put("/{post_id}", response_model=PostResponse)
 def update_post(post_id: int, post : PostCreate, db: Session = Depends(get_db)):
@@ -39,7 +39,7 @@ def update_post(post_id: int, post : PostCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_post)
         return new_post
-    return {"message": "Post not found"}
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
 @router.delete("/{post_id}")
 def delete_post(post_id: int, db: Session = Depends(get_db)):
@@ -48,4 +48,4 @@ def delete_post(post_id: int, db: Session = Depends(get_db)):
         db.delete(new_post)
         db.commit()
         return {"message": "Post deleted successfully"}
-    return {"message": "Post not found"}
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")

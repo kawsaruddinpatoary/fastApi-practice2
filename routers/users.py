@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from database.database import get_db, Base, engine
 from database.model import User
 from database.schemas import UserCreate, UserResponse
@@ -27,7 +27,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     new_user = db.query(User).filter(User.id == user_id).first()
     if new_user:
         return new_user
-    return {"message": "User not found"}
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
 @router.put("/{user_id}", response_model=UserResponse)
 def update_user(user_id: int, user : UserCreate, db: Session = Depends(get_db)):
@@ -38,7 +38,7 @@ def update_user(user_id: int, user : UserCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(new_user)
         return new_user
-    return {"message": "User not found"}
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
 @router.delete("/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db)):
@@ -47,4 +47,4 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         db.delete(new_user)
         db.commit()
         return {"message": "User deleted successfully"}
-    return {"message": "User not found"}
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
