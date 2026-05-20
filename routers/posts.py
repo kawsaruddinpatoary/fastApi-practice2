@@ -29,6 +29,20 @@ def get_post(post_id: int, db: Session = Depends(get_db)):
         return new_post
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
+@router.get("/user/{user_id}", response_model=list[PostResponse])
+def get_posts_by_user(user_id: int, db: Session = Depends(get_db)):
+    posts = db.query(Post).filter(Post.user_id == user_id).all()
+    if len(posts) > 0:
+        return posts
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No posts found for this user")
+
+@router.get("/search/", response_model=list[PostResponse])
+def search_posts(keyword: str, db: Session = Depends(get_db)):
+    posts = db.query(Post).filter(Post.title.contains(keyword) | Post.content.contains(keyword)).all()
+    if len(posts) > 0:
+        return posts
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No posts found matching the keyword")
+
 @router.put("/{post_id}", response_model=PostResponse)
 def update_post(post_id: int, post : PostCreate, db: Session = Depends(get_db)):
     new_post = db.query(Post).filter(Post.id == post_id).first()

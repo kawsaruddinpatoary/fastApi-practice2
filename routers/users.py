@@ -29,6 +29,13 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
         return new_user
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
+@router.get("/search/", response_model=list[UserResponse])
+def search_users(keyword: str, db: Session = Depends(get_db)):
+    users = db.query(User).filter(User.name.contains(keyword)).all()
+    if len(users) > 0:
+        return users
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No users found matching the keyword")
+
 @router.put("/{user_id}", response_model=UserResponse)
 def update_user(user_id: int, user : UserCreate, db: Session = Depends(get_db)):
     new_user = db.query(User).filter(User.id == user_id).first()
